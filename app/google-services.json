@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "317031926413",
+    "project_id": "treklogger-98ad7",
+    "storage_bucket": "treklogger-98ad7.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:317031926413:android:4874e763efabecfafa30c4",
+        "android_client_info": {
+          "package_name": "com.university.treklogger"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyB42hlOWNV1mhpGTXl8vb3ON7Jvjuuskj0"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

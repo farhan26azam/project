@@ -1,0 +1,9 @@
+<resources xmlns:tools="http://schemas.android.com/tools">
+    <!-- Base application theme. -->
+    <style name="Base.Theme.Treklogger" parent="Theme.Material3.DayNight.NoActionBar">
+        <!-- Customize your light theme here. -->
+         <item name="colorPrimary">@color/theme_pink</item>
+    </style>
+
+    <style name="Theme.Treklogger" parent="Base.Theme.Treklogger" />
+</resources>
