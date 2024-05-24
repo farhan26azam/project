@@ -4,12 +4,14 @@ import android.content.Intent;
 import android.graphics.Typeface;
 import android.os.Bundle;
 import android.util.Log;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import androidx.activity.EdgeToEdge;
 import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import androidx.cardview.widget.CardView;
 import androidx.constraintlayout.widget.ConstraintLayout;
 import androidx.fragment.app.Fragment;
@@ -24,6 +26,7 @@ import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.firestore.DocumentSnapshot;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.university.treklogger.screens.AddTrekActivity;
+import com.university.treklogger.screens.MapsActivity;
 import com.university.treklogger.screens.PeopleActivity;
 import com.university.treklogger.screens.SettingsActivity;
 import com.university.treklogger.screens.TrekDetailsActivity;
@@ -37,7 +40,8 @@ public class MainActivity extends AppCompatActivity {
 
     ConstraintLayout frameLayout;
     LinearLayout treksLayout;
-    FloatingActionButton home, treks, startTrek, notifications, settings;
+    ImageButton home, treks, startTrek, trekkers, settings;
+    Toolbar toolbar;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -49,8 +53,16 @@ public class MainActivity extends AppCompatActivity {
         home = findViewById(R.id.home);
         treks = findViewById(R.id.locations);
         startTrek = findViewById(R.id.navigate);
-        notifications = findViewById(R.id.notifications);
+        trekkers = findViewById(R.id.trekkers);
         settings = findViewById(R.id.settings);
+        toolbar = findViewById(R.id.toolbar);
+
+        toolbar.setNavigationIcon(R.drawable.menu);
+
+        toolbar.setNavigationOnClickListener(v -> {
+            frameLayout.removeAllViews();
+            loadFragment(new SettingsActivity());
+        });
 
         home.setOnClickListener(v -> {
             Intent intent = new Intent(this, MainActivity.class);
@@ -69,9 +81,11 @@ public class MainActivity extends AppCompatActivity {
             startActivity(intent);
         });
 
-        notifications.setOnClickListener(v -> {
-            frameLayout.removeAllViews();
-            loadFragment(new PeopleActivity());
+        trekkers.setOnClickListener(v -> {
+//            frameLayout.removeAllViews();
+//            loadFragment(new PeopleActivity());
+            Intent intent = new Intent(this, MapsActivity.class);
+            startActivity(intent);
         });
 
         settings.setOnClickListener(v -> {
@@ -86,8 +100,7 @@ public class MainActivity extends AppCompatActivity {
 
         userGreetings = findViewById(R.id.userGreeting);
 
-//        userGreetings.setText("Welcome, " + auth.getCurrentUser().getDisplayName().substring(0, auth.getCurrentUser().getDisplayName().indexOf(" ")) + "!");
-        userGreetings.setText("Welcome, " + " USER " + "!");
+        userGreetings.setText("Welcome, " + auth.getCurrentUser().getDisplayName().substring(0, auth.getCurrentUser().getDisplayName().indexOf(" ")) + "!");
 
         fetchTreks();
     }
@@ -99,10 +112,6 @@ public class MainActivity extends AppCompatActivity {
                 .addOnCompleteListener(task -> {
                     if (task.isSuccessful()) {
                         treksLayout.removeAllViews();
-                        treksLayout.setLayoutParams(new LinearLayout.LayoutParams(
-                                LinearLayout.LayoutParams.MATCH_PARENT,
-                                LinearLayout.LayoutParams.WRAP_CONTENT
-                        ));
                         for (DocumentSnapshot document : task.getResult()) {
                             CardView trekCard = new CardView(this);
                             trekCard.setLayoutParams(

@@ -21,73 +21,99 @@
 
             <!-- Trek Title -->
             <TextView
+                android:id="@+id/trekSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#F48FB1"
+                android:backgroundTint="#F48FB1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Trek"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+
+            <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins_bold"
                 android:text="Trek Title"
-                android:textSize="16sp" />
+                android:textSize="20sp" />
 
             <EditText
                 android:id="@+id/trek_title_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:inputType="text"
-                android:hint="Enter trek title" />
+                android:fontFamily="@font/poppins_bold"
+                android:hint="Enter trek title"
+                android:inputType="text" />
 
             <!-- Trek Description -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins"
                 android:text="Trek Description"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:textSize="16sp" />
 
             <EditText
                 android:id="@+id/trek_description_edit_text"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:hint="Enter trek description"
                 android:inputType="textMultiLine"
-                android:lines="4"
-                android:hint="Enter trek description" />
+                android:lines="5"
+                android:singleLine="false"
+                android:textAlignment="viewStart"
+                android:textAppearance="@style/TextAppearance.AppCompat.Body2" />
 
             <!-- Cover Image -->
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins"
                 android:text="Cover Image"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:textSize="16sp" />
 
             <ImageView
                 android:id="@+id/cover_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
+                android:layout_width="300dp"
+                android:layout_height="200dp"
                 android:adjustViewBounds="true"
-                android:src="@drawable/ic_launcher_foreground"
+                android:src="@drawable/image"
                 android:layout_marginTop="8dp"
                 android:clickable="true"
                 android:focusable="true"
                 android:contentDescription="Cover Image" />
 
-            <ScrollView
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                >
-
-
-            <LinearLayout
-                android:id="@+id/pointsList"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="vertical" />
-
-            </ScrollView>
             <!-- Point Name -->
+            <TextView
+                android:id="@+id/pointsSectionTitle"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#F48FB1"
+                android:backgroundTint="#F48FB1"
+                android:fontFamily="@font/poppins_semibold"
+                android:text="Points"
+                android:textAlignment="center"
+                android:textColor="#FFFFFF"
+                android:textSize="24sp" />
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginTop="8dp"
+                android:fontFamily="@font/poppins"
                 android:text="Point Name"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
+                android:textSize="16sp" />
+
+            <Button
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Add Point Name"
+                android:id="@+id/add_point_name_button"/>
 
             <EditText
                 android:id="@+id/point_name_edit_text"
@@ -96,54 +122,58 @@
                 android:inputType="text"
                 android:hint="Enter point name" />
 
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:fontFamily="@font/poppins"
+                android:text="Point Image"
+                android:textSize="16sp" />
+
             <ImageView
                 android:id="@+id/point_image_view"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:adjustViewBounds="true"
-                android:src="@drawable/ic_launcher_foreground"
+                android:layout_width="100dp"
+                android:layout_height="100dp"
                 android:layout_marginTop="8dp"
+                android:adjustViewBounds="true"
                 android:clickable="true"
+                android:contentDescription="Point Image"
                 android:focusable="true"
-                android:contentDescription="Point Image" />
+                android:src="@drawable/points" />
 
             <!-- Latitude -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Latitude"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
-
-            <EditText
-                android:id="@+id/latitude_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:hint="Enter latitude" />
 
             <!-- Longitude -->
-            <TextView
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:text="Longitude"
-                android:textSize="16sp"
-                android:layout_marginTop="8dp"/>
-
-            <EditText
-                android:id="@+id/longitude_edit_text"
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:inputType="numberDecimal"
-                android:hint="Enter longitude" />
 
             <!-- Add Point Button -->
             <Button
                 android:id="@+id/add_point_button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add Point"
-                android:layout_marginTop="16dp" />
+                android:layout_marginTop="16dp"
+                android:text="Save Point" />
+
+            <ScrollView
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+
+                <LinearLayout
+                    android:id="@+id/pointsList"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/addedPointsText"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:fontFamily="@font/poppins_bold"
+                        android:text="Added Points"
+                        android:textSize="20sp" />
+                </LinearLayout>
+
+            </ScrollView>
 
         </LinearLayout>
     </ScrollView>

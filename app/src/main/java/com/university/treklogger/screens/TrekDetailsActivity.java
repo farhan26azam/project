@@ -103,14 +103,32 @@ public class TrekDetailsActivity extends Fragment {
                                 pointDocument.getString("name")
                         );
 
+                        LinearLayout singlePointLayout = new LinearLayout(getContext());
+                        singlePointLayout.setLayoutParams(new LinearLayout.LayoutParams(
+                                LinearLayout.LayoutParams.MATCH_PARENT,
+                                LinearLayout.LayoutParams.WRAP_CONTENT
+                        ));
+                        singlePointLayout.setOrientation(LinearLayout.HORIZONTAL);
+
+                        ImageView pointIcon = new ImageView(getContext());
+                        pointIcon.setLayoutParams(new LinearLayout.LayoutParams(
+                                100,
+                                100
+                        ));
+                        pointIcon.setScaleType(ImageView.ScaleType.CENTER_CROP);
+                        // get drawable points.png from resources
+                        pointIcon.setImageResource(R.drawable.points);
+                        singlePointLayout.addView(pointIcon);
+
                         // Add point to list
                         TextView pointTextView = new TextView(getContext());
                         pointTextView.setText(point.getName());
                         pointTextView.setTextSize(20);
                         pointTextView.setPadding(16, 16, 16, 16);
-                        pointTextView.setBackgroundColor(getResources().getColor(R.color.white));
                         pointTextView.setTextColor(getResources().getColor(R.color.dark_gray));
-                        pointsList.addView(pointTextView);
+
+                        singlePointLayout.addView(pointTextView);
+                        pointsList.addView(singlePointLayout);
 
                         points.add(point);
                         Log.d("Point", "Loaded point: " + point.getName());

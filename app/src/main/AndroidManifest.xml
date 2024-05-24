@@ -12,8 +12,45 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.Treklogger"
         tools:targetApi="31">
+
+        <!--
+             TODO: Before you run your application, you need a Google Maps API key.
+
+             To get one, follow the directions here:
+
+                https://developers.google.com/maps/documentation/android-sdk/get-api-key
+
+             Once you have your API key (it starts with "AIza"), define a new property in your
+             project's local.properties file (e.g. MAPS_API_KEY=Aiza...), and replace the
+             "YOUR_API_KEY" string in this file with "${MAPS_API_KEY}".
+        -->
+        <meta-data
+            android:name="com.google.android.geo.API_KEY"
+            android:value="AIzaSyBfdCE4JrhREcLIPG2KZAIrKKkp7baEPoY" />
+
+        <activity
+            android:name=".screens.MapsActivity"
+            android:exported="true"
+            android:label="@string/title_activity_maps">
+<!--            <intent-filter>-->
+<!--                <action android:name="android.intent.action.MAIN" />-->
+
+<!--                <category android:name="android.intent.category.LAUNCHER" />-->
+<!--            </intent-filter>-->
+        </activity>
         <activity
             android:name=".MainActivity"
+            android:exported="true">
+
+            <!-- <intent-filter> -->
+            <!-- <action android:name="android.intent.action.MAIN" /> -->
+
+
+            <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            <!-- </intent-filter> -->
+        </activity>
+        <activity
+            android:name=".authentication.LoginActivity"
             android:exported="true">
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -21,17 +58,10 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
-        <activity android:name=".authentication.LoginActivity" android:exported="true">
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.MAIN" />-->
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-        </activity>
-        <activity android:name=".screens.TreksActivity"/>
-        <activity android:name=".screens.AddTrekActivity"/>
-        <activity android:name=".screens.PeopleActivity"/>
-        <activity android:name=".screens.SettingsActivity"/>
-
-</application>
+        <activity android:name=".screens.TreksActivity" />
+        <activity android:name=".screens.AddTrekActivity" />
+        <activity android:name=".screens.PeopleActivity" />
+        <activity android:name=".screens.SettingsActivity" />
+    </application>
 
 </manifest>

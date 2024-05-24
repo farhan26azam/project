@@ -28,21 +28,17 @@ import com.google.firebase.auth.AuthCredential;
 import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.GoogleAuthProvider;
+import com.google.firebase.firestore.FirebaseFirestore;
 import com.university.treklogger.MainActivity;
 import com.university.treklogger.R;
+import com.university.treklogger.entities.User;
 
 import java.util.Objects;
 
 
 public class LoginActivity extends AppCompatActivity {
     FirebaseAuth auth;
-
     GoogleSignInClient googleSignInClient;
-
-    ShapeableImageView imageView;
-
-    TextView name, mail;
-
     private final ActivityResultLauncher<Intent> activityResultLauncher = registerForActivityResult(new ActivityResultContracts.StartActivityForResult(), new ActivityResultCallback<ActivityResult>() {
         @Override
         public void onActivityResult(ActivityResult result) {
@@ -56,9 +52,6 @@ public class LoginActivity extends AppCompatActivity {
                         public void onComplete(@NonNull Task<AuthResult> task) {
                             if(task.isSuccessful()) {
                                 auth = FirebaseAuth.getInstance();
-                                Glide.with(LoginActivity.this).load(Objects.requireNonNull(auth.getCurrentUser()).getPhotoUrl()).into(imageView);
-                                name.setText(auth.getCurrentUser().getDisplayName());
-                                mail.setText(auth.getCurrentUser().getEmail());
                                 Toast.makeText(LoginActivity.this, "Logged in as "+ auth.getCurrentUser().getDisplayName(), Toast.LENGTH_SHORT).show();
 
 
@@ -68,6 +61,9 @@ public class LoginActivity extends AppCompatActivity {
                                         .putString("email", auth.getCurrentUser().getEmail())
                                         .putString("photo", auth.getCurrentUser().getPhotoUrl().toString())
                                         .apply();
+
+                                // save user data to Firestore
+                                saveUserToFirestore();
 
                                 startActivity(new Intent(LoginActivity.this, MainActivity.class));
                                 finish();
@@ -109,10 +105,6 @@ public class LoginActivity extends AppCompatActivity {
 
         // getuser from shared preferences, user might not be stored in shared preferences
 
-        imageView = findViewById(R.id.profileImage);
-        name = findViewById(R.id.nameTV);
-        mail = findViewById(R.id.mailTV);
-
         GoogleSignInOptions options = new GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
                 .requestIdToken(getString(R.string.client_id))
                 .requestEmail()
@@ -127,5 +119,23 @@ public class LoginActivity extends AppCompatActivity {
             Intent intent = googleSignInClient.getSignInIntent();
             activityResultLauncher.launch(intent);
         });
+    }
+
+    private void saveUserToFirestore() {
+        User user = new User(
+                Objects.requireNonNull(auth.getCurrentUser()).getDisplayName(),
+                auth.getCurrentUser().getEmail(),
+                Objects.requireNonNull(auth.getCurrentUser().getPhotoUrl()).toString()
+        );
+
+        FirebaseFirestore.getInstance().collection("users")
+                .document(auth.getCurrentUser().getUid())
+                .set(user)
+                .addOnSuccessListener(aVoid -> {
+                    Toast.makeText(LoginActivity.this, "User data saved to Firestore", Toast.LENGTH_SHORT).show();
+                })
+                .addOnFailureListener(e -> {
+                    Toast.makeText(LoginActivity.this, "Failed to save user data to Firestore", Toast.LENGTH_SHORT).show();
+                });
     }
 }
