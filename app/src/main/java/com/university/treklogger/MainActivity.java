@@ -86,7 +86,8 @@ public class MainActivity extends AppCompatActivity {
 
         userGreetings = findViewById(R.id.userGreeting);
 
-        userGreetings.setText("Welcome, " + auth.getCurrentUser().getDisplayName().substring(0, auth.getCurrentUser().getDisplayName().indexOf(" ")) + "!");
+//        userGreetings.setText("Welcome, " + auth.getCurrentUser().getDisplayName().substring(0, auth.getCurrentUser().getDisplayName().indexOf(" ")) + "!");
+        userGreetings.setText("Welcome, " + " USER " + "!");
 
         fetchTreks();
     }

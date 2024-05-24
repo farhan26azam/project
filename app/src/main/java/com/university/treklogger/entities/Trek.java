@@ -10,6 +10,10 @@ public class Trek {
     private String coverImageUrl;
     private List<Point> points;
 
+    public Trek(){
+
+    }
+
     public Trek(String title, String description, String coverImageUrl, List<Point> points) {
         this.title = title;
         this.description = description;
@@ -31,5 +35,21 @@ public class Trek {
 
     public List<Point> getPoints() {
         return points;
+    }
+
+    public void setTitle(String title) {
+        this.title = title;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public void setCoverImageUrl(String coverImageUrl) {
+        this.coverImageUrl = coverImageUrl;
+    }
+
+    public void setPoints(List<Point> points) {
+        this.points = points;
     }
 }

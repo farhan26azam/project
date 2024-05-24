@@ -32,5 +32,6 @@ public class Point {
     }
 
     public void setImageUrl(String path) {
+        image = path;
     }
 }

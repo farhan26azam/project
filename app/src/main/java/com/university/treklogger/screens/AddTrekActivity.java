@@ -9,28 +9,26 @@ import android.util.Log;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
-import androidx.annotation.NonNull;
 import androidx.appcompat.app.AppCompatActivity;
 
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.firebase.firestore.FirebaseFirestore;
 import com.google.firebase.storage.FirebaseStorage;
 import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
 import com.university.treklogger.R;
 import com.university.treklogger.entities.Point;
 import com.university.treklogger.entities.Trek;
 
 import java.util.ArrayList;
-import java.util.Collections;
 import java.util.List;
 
 public class AddTrekActivity extends AppCompatActivity {
 
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int PICK_POINT_IMAGE_REQUEST = 2;
     private EditText trekTitleEditText;
     private EditText trekDescriptionEditText;
     private EditText pointNameEditText;
@@ -39,13 +37,19 @@ public class AddTrekActivity extends AppCompatActivity {
     private Button addPointButton;
     private Button saveTrekButton;
     private ImageView coverImageView;
+    private ImageView pointImageView;
     private Uri coverImageUri;
+    private Uri pointImageUri;
     private List<Uri> pointImageUris;
     private ProgressDialog progressDialog;
     private FirebaseFirestore db;
     private StorageReference storageRef;
     private String trekId;
     private List<Point> points;
+
+    LinearLayout pointsList;
+
+    private Trek trek = new Trek();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -60,6 +64,8 @@ public class AddTrekActivity extends AppCompatActivity {
         addPointButton = findViewById(R.id.add_point_button);
         saveTrekButton = findViewById(R.id.save_trek_button);
         coverImageView = findViewById(R.id.cover_image_view);
+        pointImageView = findViewById(R.id.point_image_view);
+        pointsList = findViewById(R.id.pointsList);
 
         progressDialog = new ProgressDialog(this);
         progressDialog.setMessage("Uploading...");
@@ -70,18 +76,27 @@ public class AddTrekActivity extends AppCompatActivity {
         pointImageUris = new ArrayList<>();
         points = new ArrayList<>();
 
-        coverImageView.setOnClickListener(view -> openFileChooser());
+        coverImageView.setOnClickListener(view -> openCoverImageChooser());
+
+        pointImageView.setOnClickListener(view -> openPointImageChooser());
 
         addPointButton.setOnClickListener(view -> addPoint());
 
         saveTrekButton.setOnClickListener(view -> saveTrek());
     }
 
-    private void openFileChooser() {
+    private void openCoverImageChooser() {
         Intent intent = new Intent();
         intent.setType("image/*");
         intent.setAction(Intent.ACTION_GET_CONTENT);
         startActivityForResult(intent, PICK_IMAGE_REQUEST);
+    }
+
+    private void openPointImageChooser(){
+        Intent intent = new Intent();
+        intent.setType("image/*");
+        intent.setAction(Intent.ACTION_GET_CONTENT);
+        startActivityForResult(intent, PICK_POINT_IMAGE_REQUEST);
     }
 
     @Override
@@ -90,22 +105,18 @@ public class AddTrekActivity extends AppCompatActivity {
 
         // Inside onActivityResult method
         if (requestCode == PICK_IMAGE_REQUEST && resultCode == RESULT_OK && data != null && data.getData() != null) {
-            if (coverImageView.isFocused()) {
-                // This is the cover image selection
-                coverImageUri = data.getData();
-                coverImageView.setImageURI(coverImageUri);
-            } else {
-                // This is the point image selection
-                Uri pointImageUri = data.getData();
-                pointImageUris.add(pointImageUri);
-                // Show selected image for point
-                // (You need to implement this part in your UI)
-            }
+            coverImageUri = data.getData();
+            coverImageView.setImageURI(coverImageUri);
+        }
+        else if(requestCode == PICK_POINT_IMAGE_REQUEST  && resultCode == RESULT_OK && data != null && data.getData() != null){
+            pointImageUri = data.getData();
+            pointImageView.setImageURI(pointImageUri);
         }
     }
 
     // Inside addPoint method
     private void addPoint() {
+        String title = trekTitleEditText.getText().toString().trim();
         String name = pointNameEditText.getText().toString().trim();
         double latitude = Double.parseDouble(latitudeEditText.getText().toString().trim());
         double longitude = Double.parseDouble(longitudeEditText.getText().toString().trim());
@@ -117,28 +128,65 @@ public class AddTrekActivity extends AppCompatActivity {
         }
 
         // If there's a point image URI for this point, set it
-        if (!pointImageUris.isEmpty()) {
+        if (pointImageUri!=null) {
             // Get the image URI for this point (assuming it was added in the onActivityResult method)
-            imageUri = pointImageUris.get(pointImageUris.size() - 1).toString();
+            imageUri = pointImageUri.toString();
         }
 
         // Create a new point with the provided data
         Point point = new Point(latitude, longitude, imageUri, name);
 
         // Add the point to the list
+
+
+        TextView pointTV = new TextView(this);
+        pointTV.setText(name);
+        pointTV.setPadding(16,16,16,16);
+        pointTV.setTextSize(24);
+        pointTV.setBackgroundColor(getResources().getColor(R.color.theme_pink));
+        pointTV.setTextColor(getResources().getColor(R.color.white));
+
+        pointsList.addView(pointTV);
+        TextView spacing = new TextView(this);
+        spacing.setBackgroundColor(getResources().getColor(R.color.transparent));
+
+        pointsList.addView(spacing);
+
+        StorageReference imageRef = storageRef.child("points/" + title.replace(" ", "_") + name + ".jpg");
+        Uri pointImageUri  = Uri.parse(imageUri);
+        imageRef.putFile(pointImageUri)
+                .addOnSuccessListener(taskSnapshot -> {
+                    // Get the download URL
+                    imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        point.setImageUrl(downloadUrl); // Save the global URL to your point object
+                        Toast.makeText(AddTrekActivity.this, "Point image uploaded successfully", Toast.LENGTH_LONG).show();
+                        Log.d("AddTrekActivity", "Image URL: " + downloadUrl);
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(AddTrekActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                        Log.e("AddTrekActivity", "Failed to get download URL", e);
+                    });
+                })
+                .addOnFailureListener(e -> {
+                    progressDialog.dismiss();
+                    Toast.makeText(AddTrekActivity.this, "Failed to upload point image", Toast.LENGTH_SHORT).show();
+                    Log.e("AddTrekActivity", "Failed to upload point image", e);
+                });
+
         points.add(point);
 
         // Clear input fields
         pointNameEditText.setText("");
         latitudeEditText.setText("");
         longitudeEditText.setText("");
+        pointImageView.setImageDrawable(getDrawable(R.drawable.ic_launcher_foreground));
     }
 
 
     private void saveTrek() {
         String title = trekTitleEditText.getText().toString().trim();
         String description = trekDescriptionEditText.getText().toString().trim();
-
+String coverImage;
         if (title.isEmpty() || description.isEmpty() || coverImageUri == null || points.isEmpty()) {
             Toast.makeText(this, "Please fill all fields", Toast.LENGTH_SHORT).show();
             return;
@@ -147,11 +195,21 @@ public class AddTrekActivity extends AppCompatActivity {
         progressDialog.show();
 
         // Upload cover image
-        StorageReference coverRef = storageRef.child("treks/" + trekId + "/cover.jpg");
+        StorageReference coverRef = storageRef.child("treks/" + title.replace(" ", "_") + ".jpg");
         coverRef.putFile(coverImageUri)
                 .addOnSuccessListener(taskSnapshot -> {
                     // Cover image uploaded successfully, now upload points images
-                    uploadPointImages();
+                    coverRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                        String downloadUrl = uri.toString();
+                        trek.setCoverImageUrl(downloadUrl);
+                        Toast.makeText(AddTrekActivity.this, "Cover image uploaded successfully", Toast.LENGTH_LONG).show();
+                        Log.d("AddTrekActivity", "Image URL: " + uri.toString());
+                    }).addOnFailureListener(e -> {
+                        Toast.makeText(AddTrekActivity.this, "Failed to get download URL", Toast.LENGTH_SHORT).show();
+                        Log.e("AddTrekActivity", "Failed to get download URL", e);
+                    });
+//                    uploadPointImages();
+                    saveTrekToFirestore();
                 })
                 .addOnFailureListener(e -> {
                     progressDialog.dismiss();
@@ -160,41 +218,14 @@ public class AddTrekActivity extends AppCompatActivity {
                 });
     }
 
-    private void uploadPointImages() {
-        // Upload images of each point
-        for (int i = 0; i < points.size(); i++) {
-            Point point = points.get(i);
-            Uri imageUri = pointImageUris.get(i);
-            if (imageUri != null) {
-                StorageReference imageRef = storageRef.child("treks/" + trekId + "/points/point" + i + ".jpg");
-                int finalI = i;
-                imageRef.putFile(imageUri)
-                        .addOnSuccessListener(taskSnapshot -> {
-                            // Point image uploaded successfully
-                            point.setImageUrl(imageRef.getPath());
-                            if (finalI == points.size() - 1) {
-                                // All images uploaded, now save trek to Firestore
-                                saveTrekToFirestore();
-                            }
-                        })
-                        .addOnFailureListener(e -> {
-                            progressDialog.dismiss();
-                            Toast.makeText(AddTrekActivity.this, "Failed to upload point image", Toast.LENGTH_SHORT).show();
-                            Log.e("AddTrekActivity", "Failed to upload point image", e);
-                        });
-            } else {
-                if (i == points.size() - 1) {
-                    // All images uploaded, now save trek to Firestore
-                    saveTrekToFirestore();
-                }
-            }
-        }
-    }
-
     private void saveTrekToFirestore() {
-        Trek trek = new Trek(trekTitleEditText.getText().toString().trim(),
-                trekDescriptionEditText.getText().toString().trim(),
-                coverImageUri.toString(), points);
+//        Trek trek = new Trek(trekTitleEditText.getText().toString().trim(),
+//                trekDescriptionEditText.getText().toString().trim(),
+//                coverImageUri.toString(), points);
+
+        trek.setTitle(trekTitleEditText.getText().toString().trim());
+        trek.setDescription(trekDescriptionEditText.getText().toString().trim());
+        trek.setPoints(points);
 
         db.collection("treks")
                 .add(trek)
